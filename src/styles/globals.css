@@ -1,0 +1,477 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ===== Core Theme Variables ===== */
+
+    /* Background and Foreground */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    /* Card colors */
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    /* Popover colors (for Dialog, Dropdown, etc.) */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* Muted colors */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* Accent colors (for hover states) */
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    /* Destructive colors (for delete buttons, error states) */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Border and Input */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+
+    /* Ring (focus) */
+    --ring: 222.2 84% 4.9%;
+
+    /* Border Radius */
+    --radius: 0.5rem;
+
+    /* Primary brand colors (default: emerald for restaurant panels) */
+    --primary-50: 214 100% 97%;
+    --primary-100: 214 95% 93%;
+    --primary-200: 213 97% 87%;
+    --primary-300: 212 96% 78%;
+    --primary-400: 213 94% 68%;
+    --primary-500: 217 91% 60%;
+    --primary-600: 221 83% 53%;
+    --primary-700: 224 76% 48%;
+    --primary-800: 226 71% 40%;
+    --primary-900: 224 64% 33%;
+    --primary-950: 226 57% 21%;
+
+    /* Secondary colors (default: slate) */
+    --secondary-50: 210 40% 98%;
+    --secondary-100: 210 40% 96%;
+    --secondary-200: 214 32% 91%;
+    --secondary-300: 213 27% 84%;
+    --secondary-400: 215 20% 65%;
+    --secondary-500: 215 16% 47%;
+    --secondary-600: 215 19% 35%;
+    --secondary-700: 215 25% 27%;
+    --secondary-800: 217 33% 17%;
+    --secondary-900: 222 47% 11%;
+    --secondary-950: 229 84% 5%;
+
+    /* ===== Accessibility Variables ===== */
+
+    /* Font scaling (base scale = 1) */
+    --font-scale: 1;
+    --font-xs: calc(12px * var(--font-scale));
+    --font-sm: calc(14px * var(--font-scale));
+    --font-base: calc(16px * var(--font-scale));
+    --font-lg: calc(18px * var(--font-scale));
+    --font-xl: calc(20px * var(--font-scale));
+    --font-2xl: calc(24px * var(--font-scale));
+    --font-3xl: calc(30px * var(--font-scale));
+
+    /* Line heights */
+    --line-height-tight: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+
+    /* Touch target sizes (WCAG 2.1 AA: 44x44px) */
+    --touch-target-min: 44px;
+    --touch-target-comfortable: 48px;
+    --touch-target-large: 56px;
+
+    /* Transition durations */
+    --transition-fast: 150ms;
+    --transition-normal: 200ms;
+    --transition-slow: 300ms;
+
+    /* ===== Mobile Safe Areas (iOS/Android notch support) ===== */
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  }
+
+  /* ===== Dark Mode (using both class and data-theme selector) ===== */
+  .dark,
+  [data-theme="dark"] {
+    /* Dark mode background and foreground */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    /* Dark mode card colors */
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    /* Dark mode popover colors */
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Dark mode muted colors */
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    /* Dark mode accent colors */
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    /* Dark mode destructive colors */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Dark mode border and input */
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+
+    /* Dark mode ring */
+    --ring: 212.7 26.8% 83.9%;
+  }
+
+  /* ===== Font Size Accessibility (WCAG AAA: 70+ age support) ===== */
+
+  /* Large font mode (1.25x scale) */
+  [data-font-size="large"] {
+    --font-scale: 1.25;
+    --line-height-normal: 1.6;
+    --line-height-relaxed: 1.85;
+    --touch-target-min: 56px;
+  }
+
+  /* Extra large font mode (1.5x scale) */
+  [data-font-size="xlarge"] {
+    --font-scale: 1.5;
+    --line-height-normal: 1.7;
+    --line-height-relaxed: 2;
+    --touch-target-min: 64px;
+  }
+
+  /* ===== High Contrast Mode (WCAG AAA: 7:1 contrast) ===== */
+  [data-contrast="high"] {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 0%;
+    --border: 0 0% 0%;
+    --ring: 0 0% 0%;
+  }
+
+  [data-contrast="high"][data-theme="dark"],
+  [data-contrast="high"].dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 100%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 100%;
+    --border: 0 0% 100%;
+    --ring: 0 0% 100%;
+  }
+
+  /* Enhanced focus indicators in high contrast */
+  [data-contrast="high"] *:focus-visible {
+    outline: 4px solid hsl(var(--ring));
+    outline-offset: 4px;
+  }
+
+  /* ===== Color Blind Support ===== */
+
+  /* Deuteranopia (green-red blindness - most common) */
+  [data-color-blind="deuteranopia"] {
+    --success-hue: 217; /* Blue instead of green */
+    --error-hue: 24; /* Orange instead of red */
+  }
+
+  /* Protanopia (red-green blindness) */
+  [data-color-blind="protanopia"] {
+    --success-hue: 187; /* Cyan instead of green */
+    --error-hue: 38; /* Amber instead of red */
+  }
+
+  /* Tritanopia (blue-yellow blindness) */
+  [data-color-blind="tritanopia"] {
+    --primary-hue: 330; /* Pink instead of blue */
+    --warning-hue: 142; /* Green instead of yellow */
+  }
+
+  /* ===== Reduced Motion Support ===== */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Manual reduced motion setting (respects user preference in settings) */
+  [data-reduce-motion="true"] {
+    --transition-fast: 0ms;
+    --transition-normal: 0ms;
+    --transition-slow: 0ms;
+  }
+
+  [data-reduce-motion="true"] *,
+  [data-reduce-motion="true"] *::before,
+  [data-reduce-motion="true"] *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Improve text rendering */
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Prevent iOS zoom on input focus (requires 16px min font) */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Focus visible styles for accessibility (WCAG 2.1 AA) */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Remove default button styles */
+  button {
+    @apply cursor-pointer;
+  }
+
+  /* Disable tap highlight on mobile */
+  button,
+  a,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+
+  /* Selection styling */
+  ::selection {
+    @apply bg-primary-200 text-primary-900;
+  }
+
+  .dark ::selection,
+  [data-theme="dark"] ::selection {
+    @apply bg-primary-800 text-primary-100;
+  }
+}
+
+@layer components {
+  /* Shimmer loading animation background */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted-foreground) / 0.1) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    @apply animate-shimmer;
+  }
+
+  /* Gradient shift background */
+  .gradient-bg {
+    background: linear-gradient(
+      -45deg,
+      hsl(var(--primary-500)),
+      hsl(var(--secondary-500)),
+      hsl(var(--primary-600)),
+      hsl(var(--secondary-600))
+    );
+    background-size: 400% 400%;
+    @apply animate-gradient-shift;
+  }
+
+  /* Glow effect for CTAs */
+  .glow {
+    @apply animate-glow;
+  }
+
+  /* Pulse ring for notifications */
+  .pulse-ring {
+    @apply animate-pulse-ring;
+  }
+
+  /* Loading skeleton component */
+  .skeleton {
+    @apply shimmer rounded-md;
+  }
+}
+
+@layer utilities {
+  /* ===== Mobile-First Touch Utilities ===== */
+
+  /* Minimum touch target (WCAG 2.1 AA: 44x44px) */
+  .touch-target {
+    @apply min-h-11 min-w-11;
+  }
+
+  /* Comfortable touch target (48x48px) */
+  .touch-target-comfortable {
+    min-height: var(--touch-target-comfortable);
+    min-width: var(--touch-target-comfortable);
+  }
+
+  /* Large touch target (56x56px) */
+  .touch-target-large {
+    min-height: var(--touch-target-large);
+    min-width: var(--touch-target-large);
+  }
+
+  /* ===== Safe Area Utilities ===== */
+
+  .pt-safe {
+    padding-top: var(--safe-area-inset-top);
+  }
+
+  .pb-safe {
+    padding-bottom: var(--safe-area-inset-bottom);
+  }
+
+  .pl-safe {
+    padding-left: var(--safe-area-inset-left);
+  }
+
+  .pr-safe {
+    padding-right: var(--safe-area-inset-right);
+  }
+
+  .p-safe {
+    padding-top: var(--safe-area-inset-top);
+    padding-right: var(--safe-area-inset-right);
+    padding-bottom: var(--safe-area-inset-bottom);
+    padding-left: var(--safe-area-inset-left);
+  }
+
+  /* ===== Text Utilities ===== */
+
+  /* Text balance for better readability */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Text pretty for better line breaks */
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* ===== Scrollbar Utilities ===== */
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Thin scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  /* ===== Touch Action Utilities ===== */
+
+  /* Prevent pull-to-refresh / overscroll */
+  .overscroll-none {
+    overscroll-behavior: none;
+  }
+
+  /* Allow horizontal pan only (for carousels) */
+  .touch-pan-x {
+    touch-action: pan-x;
+  }
+
+  /* Allow vertical pan only (prevents horizontal swipe conflicts) */
+  .touch-pan-y {
+    touch-action: pan-y;
+  }
+
+  /* Disable touch manipulation (for custom gestures) */
+  .touch-none {
+    touch-action: none;
+  }
+
+  /* Enable all touch manipulations (default) */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+
+  /* ===== Animation Utilities ===== */
+
+  /* Animate only if user hasn't requested reduced motion */
+  .motion-safe\:animate-in {
+    animation: var(--animation-name, none) var(--animation-duration, 200ms)
+      var(--animation-timing, ease-out) forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .motion-safe\:animate-in {
+      animation: none;
+    }
+  }
+
+  /* ===== Layout Utilities ===== */
+
+  /* Dynamic viewport height (accounts for mobile browser chrome) */
+  .min-h-dvh {
+    min-height: 100dvh;
+  }
+
+  .h-dvh {
+    height: 100dvh;
+  }
+
+  /* Small viewport height (smallest possible viewport) */
+  .min-h-svh {
+    min-height: 100svh;
+  }
+
+  /* Large viewport height (largest possible viewport) */
+  .min-h-lvh {
+    min-height: 100lvh;
+  }
+}
