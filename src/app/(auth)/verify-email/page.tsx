@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * Email Verification Page
  *
@@ -17,6 +19,7 @@
  */
 
 import * as React from 'react'
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
@@ -109,7 +112,7 @@ function CheckCircleIcon({ className }: { className?: string }) {
   )
 }
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams()
   const email = searchParams.get('email')
 
@@ -278,5 +281,28 @@ export default function VerifyEmailPage() {
         </p>
       </CardFooter>
     </Card>
+  )
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense
+      fallback={
+        <Card className="border-0 shadow-lg md:border md:shadow-md">
+          <CardHeader className="space-y-4 text-center pb-2">
+            <div className="flex justify-center">
+              <div className="rounded-full bg-primary-50 p-4 dark:bg-primary-950">
+                <MailIcon className="text-primary-600 dark:text-primary-400" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <CardTitle className="text-2xl font-bold">Yükleniyor...</CardTitle>
+            </div>
+          </CardHeader>
+        </Card>
+      }
+    >
+      <VerifyEmailContent />
+    </Suspense>
   )
 }

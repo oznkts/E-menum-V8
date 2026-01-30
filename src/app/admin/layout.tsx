@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 import { checkSuperadmin } from '@/lib/actions/admin'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * Admin Layout
  *
