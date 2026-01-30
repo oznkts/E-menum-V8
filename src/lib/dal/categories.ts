@@ -565,12 +565,21 @@ export async function createCategory(
       .single()
 
     if (error) {
+      console.error('[DAL] Create category error:', error)
+      console.error('[DAL] Error details:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      })
       return { data: null, error: mapSupabaseError(error) }
     }
 
     return createSuccessResponse(category)
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
+    const stack = err instanceof Error ? err.stack : undefined
+    console.error('[DAL] Create category exception:', { message, stack })
     return createErrorResponse('unknown_error', 'Kategori oluşturulamadı', message)
   }
 }

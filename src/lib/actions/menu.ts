@@ -302,7 +302,15 @@ export async function createCategory(
     return createSuccessResponse(MENU_ACTION_MESSAGES.categoryCreated, category)
   } catch (err) {
     console.error('[Menu] Create category error:', err)
-    return createErrorResponse(MENU_ACTION_MESSAGES.serverError, 'unknown_error')
+    const errorMessage = err instanceof Error ? err.message : String(err)
+    const errorStack = err instanceof Error ? err.stack : undefined
+    console.error('[Menu] Error details:', { errorMessage, errorStack })
+    return createErrorResponse(
+      errorMessage.includes('permission') || errorMessage.includes('policy') || errorMessage.includes('RLS')
+        ? 'Bu işlem için yetkiniz yok. Lütfen organizasyon yöneticinizle iletişime geçin.'
+        : MENU_ACTION_MESSAGES.serverError,
+      'unknown_error'
+    )
   }
 }
 
@@ -1367,23 +1375,3 @@ function parseJSONField(value: FormDataEntryValue | null): unknown {
 // RE-EXPORTS FOR CONVENIENCE
 // =============================================================================
 
-export type {
-  CategoryInput,
-  CategoryUpdateInput,
-  CategorySortOrderInput,
-  CategoryMoveInput,
-  ProductInput,
-  ProductUpdateInput,
-  ProductSortOrderInput,
-  ProductMoveInput,
-  ProductAvailabilityInput,
-  BulkProductAvailabilityInput,
-  ProductModifierInput,
-  ProductModifierUpdateInput,
-  ModifierSortOrderInput,
-  ModifierOptionInput,
-  ModifierOptionUpdateInput,
-  OptionSortOrderInput,
-  BulkDeleteInput,
-  BulkVisibilityInput,
-}
