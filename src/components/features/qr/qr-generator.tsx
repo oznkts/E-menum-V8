@@ -60,6 +60,8 @@ export interface QRGeneratorProps {
   onDownload?: (format: 'png' | 'svg') => void
   /** Additional CSS class */
   className?: string
+  /** If true, only renders the QR code without action buttons (for preview) */
+  previewOnly?: boolean
 }
 
 export interface QRBrandingOptions {
@@ -260,6 +262,7 @@ export function QRGenerator({
   includeMargin = true,
   onDownload,
   className = '',
+  previewOnly = false,
 }: QRGeneratorProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -444,58 +447,62 @@ export function QRGenerator({
         </div>
       </div>
 
-      {/* URL Display with Copy */}
-      <div className="flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2">
-        <span className="flex-1 truncate text-sm text-muted-foreground">
-          {url}
-        </span>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleCopyUrl}
-          className="h-8 w-8 p-0"
-          aria-label="URL'yi kopyala"
-        >
-          {copiedUrl ? (
-            <CheckIcon className="h-4 w-4 text-green-600" />
-          ) : (
-            <CopyIcon className="h-4 w-4" />
-          )}
-        </Button>
-      </div>
+      {!previewOnly && (
+        <>
+          {/* URL Display with Copy */}
+          <div className="flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2">
+            <span className="flex-1 truncate text-sm text-muted-foreground">
+              {url}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCopyUrl}
+              className="h-8 w-8 p-0"
+              aria-label="URL'yi kopyala"
+            >
+              {copiedUrl ? (
+                <CheckIcon className="h-4 w-4 text-green-600" />
+              ) : (
+                <CopyIcon className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-wrap gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleDownloadPNG}
-          disabled={isDownloading}
-          className="flex-1 sm:flex-none"
-        >
-          <DownloadIcon className="mr-2 h-4 w-4" />
-          PNG İndir
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleDownloadSVG}
-          disabled={isDownloading}
-          className="flex-1 sm:flex-none"
-        >
-          <DownloadIcon className="mr-2 h-4 w-4" />
-          SVG İndir
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handlePrint}
-          className="flex-1 sm:flex-none"
-        >
-          <PrintIcon className="mr-2 h-4 w-4" />
-          Yazdır
-        </Button>
-      </div>
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadPNG}
+              disabled={isDownloading}
+              className="flex-1 sm:flex-none"
+            >
+              <DownloadIcon className="mr-2 h-4 w-4" />
+              PNG İndir
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadSVG}
+              disabled={isDownloading}
+              className="flex-1 sm:flex-none"
+            >
+              <DownloadIcon className="mr-2 h-4 w-4" />
+              SVG İndir
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePrint}
+              className="flex-1 sm:flex-none"
+            >
+              <PrintIcon className="mr-2 h-4 w-4" />
+              Yazdır
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   )
 }

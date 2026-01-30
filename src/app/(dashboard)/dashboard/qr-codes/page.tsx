@@ -343,9 +343,18 @@ function TableQRCard({ table, organization, brandingSettings, onView }: TableQRC
       <CardContent className="p-4">
         <div className="flex items-start gap-4">
           {/* Mini QR Preview */}
-          <button
+          <div
             onClick={onView}
-            className="flex-shrink-0 rounded-lg border bg-white p-2 hover:ring-2 hover:ring-primary-500 transition-all"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onView()
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            className="flex-shrink-0 rounded-lg border bg-white p-2 hover:ring-2 hover:ring-primary-500 transition-all cursor-pointer"
+            aria-label="QR kodu görüntüle"
           >
             <div className="relative">
               <QRGenerator
@@ -355,13 +364,14 @@ function TableQRCard({ table, organization, brandingSettings, onView }: TableQRC
                 logoUrl={brandingSettings.logoUrl}
                 size={80}
                 includeMargin={false}
+                previewOnly={true}
                 className="pointer-events-none"
               />
               <div className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/10 transition-colors rounded">
                 <span className="sr-only">QR kodu görüntüle</span>
               </div>
             </div>
-          </button>
+          </div>
 
           {/* Table Info */}
           <div className="flex-1 min-w-0">
