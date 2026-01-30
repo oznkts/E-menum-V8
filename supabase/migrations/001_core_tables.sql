@@ -4,16 +4,24 @@
 -- Description: Create core tables: organizations, profiles, memberships
 -- =====================================================
 
+-- Create public schema if it doesn't exist
+CREATE SCHEMA IF NOT EXISTS public;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO public;
+
+-- Set schema
+SET search_path TO public;
+
 -- Enable necessary extensions
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA public;
+CREATE EXTENSION IF NOT EXISTS "pgcrypto" SCHEMA public;
 
 -- =====================================================
 -- ENUM TYPES
 -- =====================================================
 
 -- Subscription tier levels
-CREATE TYPE subscription_tier AS ENUM (
+CREATE TYPE public.subscription_tier AS ENUM (
   'lite',       -- Basic tier - limited features
   'gold',       -- Mid-tier - most features
   'platinum',   -- Premium tier - all features
@@ -21,7 +29,7 @@ CREATE TYPE subscription_tier AS ENUM (
 );
 
 -- Subscription status
-CREATE TYPE subscription_status AS ENUM (
+CREATE TYPE public.subscription_status AS ENUM (
   'active',     -- Subscription is active
   'trialing',   -- In trial period
   'past_due',   -- Payment overdue
@@ -30,7 +38,7 @@ CREATE TYPE subscription_status AS ENUM (
 );
 
 -- User role within organization
-CREATE TYPE organization_role AS ENUM (
+CREATE TYPE public.organization_role AS ENUM (
   'owner',      -- Full access + billing + can delete org
   'admin',      -- Full content + user management
   'manager',    -- Content management + reports
@@ -40,7 +48,7 @@ CREATE TYPE organization_role AS ENUM (
 );
 
 -- Platform-level system role
-CREATE TYPE system_role AS ENUM (
+CREATE TYPE public.system_role AS ENUM (
   'user',       -- Regular user (default)
   'support',    -- Platform support staff
   'sales',      -- Platform sales team

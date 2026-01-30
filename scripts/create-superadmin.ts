@@ -121,16 +121,35 @@ async function createSuperadmin() {
       })
 
       if (!createResponse.ok) {
-        const errorData = await createResponse.json()
+        const errorText = await createResponse.text()
+        let errorData
+        try {
+          errorData = JSON.parse(errorText)
+        } catch {
+          errorData = errorText
+        }
         throw new Error(`Failed to create user: ${JSON.stringify(errorData)}`)
       }
 
-      const createData = (await createResponse.json()) as { user?: { id: string } }
-      if (!createData.user || !createData.user.id) {
+      const responseText = await createResponse.text()
+      let createData: { user?: { id: string } } | { id?: string }
+      try {
+        createData = JSON.parse(responseText)
+      } catch {
+        console.error('Response text:', responseText)
+        throw new Error('Invalid JSON response from user creation')
+      }
+
+      // Handle different response formats
+      if ('user' in createData && createData.user?.id) {
+        userId = createData.user.id
+      } else if ('id' in createData && createData.id) {
+        userId = createData.id
+      } else {
+        console.error('Response data:', createData)
         throw new Error('User creation returned no user data')
       }
 
-      userId = createData.user.id
       console.log(`✅ User created: ${userId}`)
     }
 
