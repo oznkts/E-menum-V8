@@ -29,8 +29,10 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/lib/hooks/use-toast'
 import { useOrganization } from '@/lib/hooks/use-organization'
 import {
-  getThemeSettings,
-  updateThemeSettings,
+  getThemeSettings as getThemeSettingsAction,
+  updateThemeSettings as updateThemeSettingsAction,
+} from '@/lib/actions/theme'
+import {
   PRESET_COLORS,
   isValidHexColor,
   type ThemeSettings,
@@ -38,6 +40,8 @@ import {
 } from '@/lib/dal/themes-client'
 import { uploadImage, deleteImage } from '@/lib/actions/storage'
 import { STORAGE_BUCKETS, extractPathFromUrl } from '@/lib/storage/shared'
+import { MenuView } from '@/components/features/public-menu/menu-view'
+import type { Category, Product } from '@/types/database'
 
 // =============================================================================
 // QUERY KEYS
@@ -565,6 +569,7 @@ interface ThemePreviewProps {
   coverUrl: string | null
   primaryColor: string | null
   secondaryColor: string | null
+  organizationId?: string
 }
 
 function ThemePreview({
@@ -573,9 +578,137 @@ function ThemePreview({
   coverUrl,
   primaryColor,
   secondaryColor,
+  organizationId,
 }: ThemePreviewProps) {
-  const displayPrimary = primaryColor || '#3B82F6'
-  const displaySecondary = secondaryColor || '#10B981'
+  // Create a mock organization with current theme settings for preview
+  const previewOrganization = {
+    id: organizationId || 'preview',
+    name: theme?.name || 'Restoran Adı',
+    slug: 'preview',
+    description: 'Dijital Menü',
+    logo_url: logoUrl,
+    cover_url: coverUrl,
+    primary_color: primaryColor,
+    secondary_color: secondaryColor,
+    currency: 'TRY',
+    is_active: true,
+    deleted_at: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    owner_id: '',
+    subscription_tier: 'lite' as const,
+    subscription_status: 'active' as const,
+    email: null,
+    phone: null,
+    website: null,
+    address: null,
+    city: null,
+    district: null,
+    postal_code: null,
+    country: null,
+    latitude: null,
+    longitude: null,
+    timezone: null,
+    language: null,
+    business_hours: null,
+    settings: null,
+    tax_id: null,
+    trade_registration: null,
+    trial_ends_at: null,
+  }
+
+  // Create sample categories for preview
+  const sampleCategories: Category[] = [
+    {
+      id: 'preview-cat-1',
+      organization_id: organizationId || 'preview',
+      name: 'Ana Yemekler',
+      slug: 'ana-yemekler',
+      description: null,
+      icon: '🍽️',
+      image_url: null,
+      parent_id: null,
+      sort_order: 0,
+      is_visible: true,
+      available_from: null,
+      available_until: null,
+      deleted_at: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: 'preview-cat-2',
+      organization_id: organizationId || 'preview',
+      name: 'İçecekler',
+      slug: 'icecekler',
+      description: null,
+      icon: '🥤',
+      image_url: null,
+      parent_id: null,
+      sort_order: 1,
+      is_visible: true,
+      available_from: null,
+      available_until: null,
+      deleted_at: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: 'preview-cat-3',
+      organization_id: organizationId || 'preview',
+      name: 'Tatlılar',
+      slug: 'tatlilar',
+      description: null,
+      icon: '🍰',
+      image_url: null,
+      parent_id: null,
+      sort_order: 2,
+      is_visible: true,
+      available_from: null,
+      available_until: null,
+      deleted_at: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+  ]
+
+  // Create sample products for preview
+  const sampleProducts: Product[] = [
+    {
+      id: 'preview-prod-1',
+      organization_id: organizationId || 'preview',
+      category_id: 'preview-cat-1',
+      name: 'Örnek Ürün',
+      slug: 'ornek-urun',
+      description: 'Lezzetli bir ürün açıklaması',
+      short_description: null,
+      image_urls: null,
+      price: 150,
+      compare_at_price: null,
+      currency: 'TRY',
+      status: 'active',
+      is_available: true,
+      stock_quantity: null,
+      sort_order: 0,
+      preparation_time_minutes: null,
+      allergens: null,
+      is_vegetarian: false,
+      is_vegan: false,
+      is_gluten_free: false,
+      is_spicy: false,
+      spicy_level: null,
+      nutritional_info: null,
+      tags: null,
+      is_featured: false,
+      featured_until: null,
+      attributes: null,
+      meta_title: null,
+      meta_description: null,
+      deleted_at: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+  ]
 
   return (
     <Card className="overflow-hidden">
@@ -586,83 +719,14 @@ function ThemePreview({
         </CardDescription>
       </CardHeader>
       <CardContent className="p-0">
-        {/* Mock Menu Preview */}
-        <div className="relative border-t">
-          {/* Cover Image */}
-          <div
-            className="h-24 w-full"
-            style={{
-              backgroundColor: coverUrl ? 'transparent' : displayPrimary,
-              backgroundImage: coverUrl ? `url(${coverUrl})` : 'none',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          />
-
-          {/* Logo */}
-          <div className="absolute left-4 top-16 z-10">
-            <div
-              className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-4 border-background shadow-lg"
-              style={{ backgroundColor: logoUrl ? 'white' : displaySecondary }}
-            >
-              {logoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={logoUrl}
-                  alt="Logo"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <span className="text-xl font-bold text-white">
-                  {theme?.name?.charAt(0).toUpperCase() || 'R'}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Restaurant Info */}
-          <div className="p-4 pt-10">
-            <h3 className="font-semibold">{theme?.name || 'Restoran Adı'}</h3>
-            <p className="text-sm text-muted-foreground">Dijital Menü</p>
-          </div>
-
-          {/* Mock Categories */}
-          <div className="flex gap-2 overflow-x-auto px-4 pb-4">
-            {['Ana Yemekler', 'İçecekler', 'Tatlılar'].map((cat, i) => (
-              <button
-                key={cat}
-                className="flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors"
-                style={{
-                  backgroundColor: i === 0 ? displayPrimary : 'transparent',
-                  color: i === 0 ? 'white' : displayPrimary,
-                  border: i === 0 ? 'none' : `1px solid ${displayPrimary}`,
-                }}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          {/* Mock Product */}
-          <div className="border-t p-4">
-            <div className="flex gap-4">
-              <div
-                className="h-20 w-20 flex-shrink-0 rounded-lg"
-                style={{ backgroundColor: `${displaySecondary}20` }}
-              />
-              <div className="flex-1">
-                <h4 className="font-medium">Örnek Ürün</h4>
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  Lezzetli bir ürün açıklaması
-                </p>
-                <p
-                  className="mt-1 font-semibold"
-                  style={{ color: displayPrimary }}
-                >
-                  ₺150,00
-                </p>
-              </div>
-            </div>
+        {/* Real Menu Preview with dynamic colors */}
+        <div className="relative h-[600px] overflow-hidden border-t">
+          <div className="h-full overflow-y-auto">
+            <MenuView
+              organization={previewOrganization as any}
+              categories={sampleCategories}
+              products={sampleProducts}
+            />
           </div>
         </div>
       </CardContent>
@@ -695,9 +759,9 @@ export default function AppearancePage() {
     queryKey: themeQueryKeys.settings(currentOrg?.id ?? ''),
     queryFn: async () => {
       if (!currentOrg?.id) return null
-      const { data, error } = await getThemeSettings(currentOrg.id)
-      if (error) throw new Error(error.message)
-      return data
+      const result = await getThemeSettingsAction(currentOrg.id)
+      if (!result.success || !result.data) throw new Error(result.message)
+      return result.data
     },
     enabled: !!currentOrg?.id,
     staleTime: 60 * 1000, // 1 minute
@@ -718,13 +782,17 @@ export default function AppearancePage() {
   const updateMutation = useMutation({
     mutationFn: async (data: ThemeUpdateInput) => {
       if (!currentOrg?.id) throw new Error('Organizasyon seçilmedi')
-      const { data: result, error } = await updateThemeSettings(currentOrg.id, data)
-      if (error) throw new Error(error.message)
-      return result
+      const result = await updateThemeSettingsAction(currentOrg.id, data)
+      if (!result.success || !result.data) throw new Error(result.message)
+      return result.data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: themeQueryKeys.settings(currentOrg?.id ?? ''),
+      })
+      // Also invalidate organization query to refresh slug
+      queryClient.invalidateQueries({
+        queryKey: ['organization', 'current', currentOrg?.id ?? ''],
       })
       setHasChanges(false)
       toast({
@@ -983,6 +1051,7 @@ export default function AppearancePage() {
               coverUrl={localCoverUrl}
               primaryColor={localPrimaryColor}
               secondaryColor={localSecondaryColor}
+              organizationId={currentOrg.id}
             />
           </div>
         </div>

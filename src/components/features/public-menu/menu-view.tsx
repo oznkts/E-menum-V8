@@ -107,10 +107,33 @@ const ALLERGEN_LABELS: Record<string, string> = {
  * Restaurant Header with cover image and branding
  */
 function RestaurantHeader({ organization }: { organization: Organization }) {
+  // Get primary color from organization or use default
+  const primaryColor = organization.primary_color || '#3B82F6'
+  const secondaryColor = organization.secondary_color || '#10B981'
+  
+  // Helper to darken color for gradient
+  const darkenColor = (color: string, percent: number) => {
+    const num = parseInt(color.replace('#', ''), 16)
+    const amt = Math.round(2.55 * percent)
+    const R = Math.max(0, Math.min(255, (num >> 16) + amt))
+    const G = Math.max(0, Math.min(255, ((num >> 8) & 0x00ff) + amt))
+    const B = Math.max(0, Math.min(255, (num & 0x0000ff) + amt))
+    return `#${(0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)}`
+  }
+
+  const darkerPrimary = darkenColor(primaryColor, -20)
+
   return (
     <header className="relative">
       {/* Cover Image */}
-      <div className="relative h-40 overflow-hidden bg-gradient-to-br from-primary-600 to-primary-800 sm:h-48">
+      <div
+        className="relative h-40 overflow-hidden sm:h-48"
+        style={{
+          background: organization.cover_url
+            ? 'none'
+            : `linear-gradient(to bottom right, ${primaryColor}, ${darkerPrimary})`,
+        }}
+      >
         {organization.cover_url && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -135,7 +158,10 @@ function RestaurantHeader({ organization }: { organization: Organization }) {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <span className="text-2xl font-bold text-primary-600 sm:text-3xl">
+              <span
+                className="text-2xl font-bold sm:text-3xl"
+                style={{ color: primaryColor }}
+              >
                 {organization.name.charAt(0)}
               </span>
             )}
@@ -165,12 +191,15 @@ function CategoryNav({
   categories,
   activeCategory,
   onCategoryClick,
+  primaryColor,
 }: {
   categories: Category[]
   activeCategory: string | null
   onCategoryClick: (categoryId: string) => void
+  primaryColor?: string | null
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const displayPrimary = primaryColor || '#3B82F6'
 
   // Scroll active category into view
   useEffect(() => {
@@ -204,9 +233,14 @@ function CategoryNav({
             onClick={() => onCategoryClick(category.id)}
             className={`touch-target-comfortable flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               activeCategory === category.id
-                ? 'bg-primary-600 text-white'
+                ? 'text-white'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
+            style={
+              activeCategory === category.id
+                ? { backgroundColor: displayPrimary }
+                : { border: `1px solid ${displayPrimary}40` }
+            }
             aria-current={activeCategory === category.id ? 'true' : undefined}
           >
             {category.icon && <span aria-hidden="true">{category.icon}</span>}
@@ -226,12 +260,15 @@ function ProductCard({
   onSelect,
   onAddToCart,
   quantityInCart = 0,
+  primaryColor,
 }: {
   product: Product
   onSelect?: (product: Product) => void
   onAddToCart?: (product: Product) => void
   quantityInCart?: number
+  primaryColor?: string | null
 }) {
+  const displayPrimary = primaryColor || '#3B82F6'
   const imageUrl = getImageUrl(product.image_urls)
   const hasDiscount = product.compare_at_price && product.compare_at_price > product.price
   const isInCart = quantityInCart > 0
@@ -303,7 +340,10 @@ function ProductCard({
 
         {/* In cart indicator */}
         {isInCart && (
-          <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary-600 text-xs font-bold text-white">
+          <div
+            className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold text-white"
+            style={{ backgroundColor: displayPrimary }}
+          >
             {quantityInCart}
           </div>
         )}
@@ -316,7 +356,10 @@ function ProductCard({
             {product.name}
           </h3>
           <div className="shrink-0 text-right">
-            <span className="font-semibold text-foreground">
+            <span
+              className="font-semibold"
+              style={{ color: displayPrimary }}
+            >
               {formatPrice(product.price, product.currency)}
             </span>
             {hasDiscount && (
@@ -367,7 +410,21 @@ function ProductCard({
           {product.is_available && onAddToCart && (
             <button
               onClick={handleAddToCart}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-600 text-white shadow-sm transition-all hover:bg-primary-700 active:scale-95"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white shadow-sm transition-all active:scale-95"
+              style={{
+                backgroundColor: displayPrimary,
+              }}
+              onMouseEnter={(e) => {
+                const darker = displayPrimary
+                  .replace('#', '')
+                  .match(/.{2}/g)
+                  ?.map((x) => Math.max(0, parseInt(x, 16) - 20).toString(16).padStart(2, '0'))
+                  .join('')
+                e.currentTarget.style.backgroundColor = `#${darker}`
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = displayPrimary
+              }}
               aria-label={`${product.name} sepete ekle`}
             >
               <svg
@@ -401,12 +458,14 @@ function CategorySection({
   onProductSelect,
   onAddToCart,
   getProductQuantity,
+  primaryColor,
 }: {
   category: Category
   products: Product[]
   onProductSelect?: (product: Product) => void
   onAddToCart?: (product: Product) => void
   getProductQuantity?: (productId: string) => number
+  primaryColor?: string | null
 }) {
   if (products.length === 0) return null
 
@@ -443,6 +502,7 @@ function CategorySection({
             onSelect={onProductSelect}
             onAddToCart={onAddToCart}
             quantityInCart={getProductQuantity?.(product.id) ?? 0}
+            primaryColor={primaryColor}
           />
         ))}
       </div>
@@ -665,6 +725,7 @@ export function MenuView({ organization, categories, products }: MenuViewProps) 
         categories={categories.filter((c) => productsByCategory[c.id]?.length > 0)}
         activeCategory={activeCategory}
         onCategoryClick={handleCategoryClick}
+        primaryColor={organization.primary_color}
       />
 
       {/* Menu Content */}

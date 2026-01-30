@@ -18,6 +18,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { createClient } from '@/lib/supabase/server'
 import {
   getThemeSettings as dalGetThemeSettings,
   updateThemeSettings as dalUpdateThemeSettings,
@@ -243,9 +244,23 @@ export async function updateThemeSettings(
       return createErrorResponse(THEME_ACTION_MESSAGES.notFound, 'not_found')
     }
 
+    // Get organization slug for revalidation
+    const supabase = await createClient()
+    const { data: orgData } = await supabase
+      .from('organizations')
+      .select('slug')
+      .eq('id', organizationId)
+      .single()
+
     // Revalidate paths
     revalidatePath('/dashboard/settings/appearance')
-    revalidatePath(`/r/[slug]`, 'page')
+    // Revalidate all public menu routes
+    revalidatePath('/r', 'page')
+    // Revalidate specific organization's menu if slug is available
+    if (orgData?.slug) {
+      revalidatePath(`/r/${orgData.slug}`, 'page')
+      revalidatePath(`/r/${orgData.slug}`, 'layout')
+    }
 
     return createSuccessResponse(THEME_ACTION_MESSAGES.themeUpdated, data)
   } catch (err) {
@@ -326,9 +341,23 @@ export async function resetThemeSettings(
       return createErrorResponse(THEME_ACTION_MESSAGES.notFound, 'not_found')
     }
 
+    // Get organization slug for revalidation
+    const supabase = await createClient()
+    const { data: orgData } = await supabase
+      .from('organizations')
+      .select('slug')
+      .eq('id', organizationId)
+      .single()
+
     // Revalidate paths
     revalidatePath('/dashboard/settings/appearance')
-    revalidatePath(`/r/[slug]`, 'page')
+    // Revalidate all public menu routes
+    revalidatePath('/r', 'page')
+    // Revalidate specific organization's menu if slug is available
+    if (orgData?.slug) {
+      revalidatePath(`/r/${orgData.slug}`, 'page')
+      revalidatePath(`/r/${orgData.slug}`, 'layout')
+    }
 
     return createSuccessResponse(THEME_ACTION_MESSAGES.themeReset, data)
   } catch (err) {
